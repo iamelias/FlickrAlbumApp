@@ -34,7 +34,9 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
         let fetchRequest: NSFetchRequest<Pin> = Pin.fetchRequest()
 
         let sortDescriptor = NSSortDescriptor(key: "creationDate", ascending: false)
-        fetchRequest.sortDescriptors = [sortDescriptor]
+        fetchRequest.sortDescriptors = [sortDescriptor] //returning objects in order of creation date
+        
+        //predicate used to filter results
         
         if let result = try? dataController?.viewContext.fetch(fetchRequest) {
             pins = result
@@ -127,9 +129,12 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
         //pins.insert(pin, at: 0)
     }
     
-    func deletePins(at indexPath: IndexPath) {
-        pins.remove(at: indexPath.row)
-        // collecView.deleteRows(at: [indexPath], with: .fade)
+    func deletePins(_ passedPin: MKPointAnnotation) {
+        //let pin = Pin(context: dataController!.viewContext)
+        for i in 0..<pins.count {
+        dataController!.viewContext.delete(pins[i])
+        try? dataController!.viewContext.save()
+        }
         
     }
     
@@ -153,6 +158,7 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
             
             annotation.coordinate = pinCoordinate //Giving pin annotation it's coordinates
             self.addPins(annotation)
+           // self.deletePins(annotation)
             
             print("$$$$$$$$$$$ \(annotation.coordinate.latitude), \(annotation.coordinate.longitude)")
 
@@ -194,6 +200,8 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
         
         
         if AnnoArrayDict[view.annotation!.description] != nil {// does key exist?
+            
+            
             self.performSegue(withIdentifier: "pushCollec", sender: self ) //if yes pass true
             print("$$$$$$$$This is the tread: \(Thread.current)")
         }
@@ -223,6 +231,8 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
         if segue.identifier == "pushCollec" {
             let key = segue.destination as! PhotoAlbumController
             key.keyExists = true
+            
+            key.dataController = dataController
             
         }
     }

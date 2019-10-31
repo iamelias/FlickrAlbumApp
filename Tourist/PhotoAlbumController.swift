@@ -17,11 +17,16 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
     static var convertURLs: [URL] = []
     static var saveCheck: Bool = false
     static var secondGo: Bool = false
+   
     var keyExists: Bool? = false //retrieved from TravelLocationController using segue
+    var dataController: DataController!
     
     @IBOutlet weak var collecImage: UIImageView!
     @IBOutlet weak var collecView: UICollectionView!
     @IBOutlet weak var Image: UIImageView!
+    
+    var pin: Pin!
+    var photos: [Photo] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
