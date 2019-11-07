@@ -175,10 +175,10 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
         
         let LocationsUrl = "https://farm\(PhotoDataStruct.savedPhotoData[i].farm).staticflickr.com/\(PhotoDataStruct.savedPhotoData[i].server)/\(PhotoDataStruct.savedPhotoData[i].id)_\(PhotoDataStruct.savedPhotoData[i].secret)_m.jpg"
         
-        let convertedPhotoUrl = URL(string: LocationsUrl) //converting string to url
-        PhotoAlbumController.convertUrl = convertedPhotoUrl! //storing copy converted Url in static variable /*uncessary*
-        print(convertedPhotoUrl!)
-        PhotoClient.requestImageFile(sUrl: convertedPhotoUrl!, passingPin: selectedPin!, completionHandler: self.handleURLImageResponse(downloadedImage:error:))
+        let convertedPhotoUrl = URL(string: LocationsUrl)! //converting string to url
+        PhotoAlbumController.convertUrl = convertedPhotoUrl //storing copy converted Url in static variable /*uncessary*
+        print(convertedPhotoUrl)
+        PhotoClient.requestImageFile(sUrl: convertedPhotoUrl, passingPin: selectedPin!, completionHandler: self.handleURLImageResponse(downloadedImage:error:))
        
         //addPhoto(convertedPhotoUrl!)
 //        PhotoClient.requestImageFile(sUrl: convertedPhotoUrl!, passingPin: selectedPin!, completionHandler: self.handleURLImageResponse(downloadedImage:error:))

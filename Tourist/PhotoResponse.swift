@@ -10,13 +10,13 @@ import Foundation
 
 struct PhotoResponse: Codable {
     
-    let id: String = ""
-    let owner: String = ""
-    let secret: String = ""
-    let server: String = ""
-    let farm: Int = 0
-    let title: String = ""
-    let ispublic: Int = 0
-    let isfriend: Int = 0
-    let isfamily: Int = 0
+    let id: String
+    let owner: String
+    let secret: String
+    let server: String
+    let farm: Int
+    let title: String
+    let ispublic: Int
+    let isfriend: Int
+    let isfamily: Int 
 }
