@@ -11,65 +11,50 @@ import UIKit
 
 class PhotoClient {
     
-    class func getPhotos(completion: @escaping (Bool, Error?) -> Void) {
+    class func getPhotos(_ selectedPin: Pin, completion: @escaping (Bool, Error?) -> Void) {
         //print("REACHED get Photos")
-        
-        //        let photoEndpointRequest = URLRequest(url: URL(string: "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=9c023ba4945ad4e3608893500bd25d42&lat=34.0522&lon=118.2437&format=json&nojsoncallback=1")!)
-        
-        //        let photoEndpointRequest = URLRequest(url: URL(string: "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=9c023ba4945ad4e3608893500bd25d42&lat=\(CoordinateStruct.latitude)&lon=\(CoordinateStruct.longitude)&format=json&nojsoncallback=1")!)
-        
-        //        let photoEndpointRequest = URLRequest(url: URL(string: "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=9c023ba4945ad4e3608893500bd25d42&lat=\(CoordinateStruct.latitude)&lon=\(CoordinateStruct.longitude)&format=json&nojsoncallback=1")!)
-        
-        let photoEndpointRequest2 = URLRequest(url: URL(string: "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=9c023ba4945ad4e3608893500bd25d42&lat=\(CoordinateStruct.latitude)&lon=\(CoordinateStruct.longitude)&per_page=5&page=1&format=json&nojsoncallback=1")!)
+//
+//        let photoEndpointRequest = URLRequest(url: URL(string: "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=9c023ba4945ad4e3608893500bd25d42&lat=\(selectedPin.latitude)&lon=\(selectedPin.longitude)&per_page=5&page=1&format=json&nojsoncallback=1")!)
         //     //   print(photoEndpointRequest)
         
-        let task = URLSession.shared.dataTask(with: photoEndpointRequest2) { data, response, error in
+        //For random page
+        
+        let randomPage = Int.random(in: 1..<6)
+        
+        let photoEndpointRequest = URLRequest(url: URL(string: "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=9c023ba4945ad4e3608893500bd25d42&lat=\(selectedPin.latitude)&lon=\(selectedPin.longitude)&per_page=10&page=\(randomPage)&format=json&nojsoncallback=1")!)
+        
+        
+//        https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=9c023ba4945ad4e3608893500bd25d42&lat=34.0522&lon=118.2437&per_page=10&page=\(randomPage)&format=json&nojsoncallback=1
+        
+        let task = URLSession.shared.dataTask(with: photoEndpointRequest) { data, response, error in
             guard data != nil else {
                 DispatchQueue.main.async {
                     // print("parsing failed 1")
-                    completion(false,nil)
+                    completion(false,error)
                 }
                 return
             }
             //
-            if error != nil {
-                DispatchQueue.main.async {
-                    completion(false, nil)
-                    return
-                }
-            }
+//            if error != nil {
+//                DispatchQueue.main.async {
+//                    completion(false, nil)
+//                    return
+//                }
+//            }
             
             let decoder = JSONDecoder()
             
             do {
-                //  print("Before Parsing")
                 let myResponseObjects = try decoder.decode(PhotoJSON1.self, from: data!) //parsing
-                //   print("After Parsing")
-                // print(myResponseObjects)
+ 
+                PhotoDataStruct.savedPhotoData = myResponseObjects.self.photos.photo
+                PhotoPageStruct.savedPageInfo = [myResponseObjects]
+                //let num = Int.random(in 1..<PhotoPageStruct.savedPageInfo[0].photos.pages)
                 
-                
-                LocationsSave.savedLocations = myResponseObjects.self.photos.photo
-                guard LocationsSave.savedLocations.count != 0 else {
-                    //
-                    //                        let alert = UIAlertController(title: "No Photos", message: "There where no photos at your coordinates", preferredStyle: .alert)
-                    //                        let okAction = UIAlertAction(title: "Ok", style: .default, handler: {(action: UIAlertAction) in
-                    //                                   return //Don't add pin
-                    //                               })
-                    //
-                    //                        alert.addAction(okAction)
-                    //
-                    //                        present(alert, animated: true, completion: nil) //Display Alert
-                    return
-                }
-                
-                //  print("Test making url index 0")
-                //                    let url: String = "https://farm\(LocationsSave.savedLocations[0].farm).staticflickr.com/\(LocationsSave.savedLocations[0].server)/\(LocationsSave.savedLocations[0].id)_\(LocationsSave.savedLocations[0].secret)_m.jpg"
-                //          //  print("******************************************************************")
-                //
-                //                   // PhotoClient.photoUrl = url
-                //                     let updatedURL = URL(string: url)
-                //                    URLInfo.convertedURL = updatedURL
-                
+//                guard PhotoDataStruct.savedPhotoData.count != 0 else {
+//                    completion(false, nil) //there are no photos at location
+//                    return
+//                }
                 DispatchQueue.main.async {
                     completion(true,nil)
                 }
@@ -78,27 +63,29 @@ class PhotoClient {
             catch {
                 DispatchQueue.main.async {
                     //  print("parsing failed 2")
-                    completion(false, nil)
+                    completion(false, error)
                 }
             }
         }
         task.resume()
     }
     
-    class func requestImageFile (url: URL, completionHandler: @escaping (UIImage?, Error?) -> Void) {
-        //  print("^^^^^^^^^^^ \(URLInfo.convertedURL!)")
+    class func requestImageFile (sUrl: URL, passingPin: Pin!, completionHandler: @escaping (UIImage?, Error?) -> Void) {
+        
+        //getting data/image from url
         let task2 =
-            URLSession.shared.dataTask(with: url) { InfoURL, response, error in
-                if let InfoURL = InfoURL {
-                    let downloadedImage = UIImage(data: InfoURL)
-                    URLInfo.downloadImage = downloadedImage
-                    if URLInfo.downloadImage == nil {
-                        //   print("In PhotoClient nil")
+            URLSession.shared.dataTask(with: sUrl) { dataURL, response, error in
+                if let dataURL = dataURL {
+                    let downloadedImage = UIImage(data: dataURL) //saving as UIImage in download image
+                    URLInfo.downloadImage = downloadedImage //saving copy to static array
+                    if downloadedImage == nil { //respond by making image placeholder image
+                        print("In PhotoClient nil")
+                        completionHandler(nil, error)
                     }
                     else {
                         //   print("URLInfo has value")
-                        DispatchQueue.global().sync{
-                            completionHandler(downloadedImage, nil)
+                        DispatchQueue.global().async{
+                            completionHandler(downloadedImage, nil) //sending downloadedImage
                         }
                         
                     }

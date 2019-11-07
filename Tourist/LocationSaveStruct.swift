@@ -8,6 +8,12 @@
 
 import Foundation
 
-struct LocationsSave {
-    static var savedLocations: [PhotoResponse] = []
+struct PhotoDataStruct {
+    static var savedPhotoData: [PhotoResponse] = []
 }
+
+struct PhotoPageStruct {
+    static var savedPageInfo: [PhotoJSON1] = []
+}
+
+

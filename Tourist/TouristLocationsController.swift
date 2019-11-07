@@ -17,7 +17,6 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
     
     static var myAnnotations: [MKAnnotation] = [] //holding all annotations
     var pins: [Pin] = []
-   // var pinCoordinate: CLLocationCoordinate2D?
     
     var dataController: DataController?
     
@@ -49,37 +48,7 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
             print("unable to fetch")
             return
         }
-        
-//        guard result != nil else {
-//            return
-//        }
-        
-//        pins = result!
-//        addPinMap(pins: pins)
-//        return
-    
-//        do {
-//        let result = try dataController.viewContext.fetch(fetchRequest)
-//            pins = result
-//            addPinMap(pins: pins)
-//            return
-//        }
-//        catch {
-//            return
-//        }
-        
-//        if let result = try? dataController.viewContext.fetch(fetchRequest) {
-//            pins = result
-//            addPinMap(pins: pins)
-//            return
-//        }
-//        else {
-//            return
-//        }
-        //print("Accessed TouristLocations ViewDidLoad")
-        
-   
-        
+  
     }
     
     func addPinMap(pins: [Pin]) {
@@ -104,7 +73,6 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
             return
         }
     }
-    
     
     func viewDidAppear() {
         mapView.removeAnnotations(TouristLocationsController.myAnnotations)
@@ -135,7 +103,6 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
         dataController!.viewContext.delete(pins[i])
         try? dataController!.viewContext.save()
         }
-        
     }
     
     @IBAction func longPressPin(_ sender: UILongPressGestureRecognizer) { //adding annotation
@@ -181,10 +148,8 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
     
     //**********
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-        // Thread.cancel(Thread)
-        //Uses dictionary and annotationPinKey. Assigning tapped pin annotation as static annotationPinKey. Checks to see if annotationKey already exists in dictionary which sends boolean.
-        //        mapView.deselectAnnotation(view.annotation, animated: false)
-        
+        mapView.deselectAnnotation(view.annotation, animated: false)
+
         print("^^^^^: \(Thread.current)")
         
         //let test = String(view.annotation! as! String)
@@ -192,50 +157,39 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
         let test = view.annotation?.description
         print("********#########$$$$$$$\(test!)")
         print(type(of: test!))
-        //        print("**********\(test)")
-        
-        //AditionalDataStruct.annotationPinKey = (view.annotation!) as! MKPointAnnotation
-        
-        AdditionalDataStruct.annotationPinKey = (view.annotation!.description)
-        
-        
-        if AnnoArrayDict[view.annotation!.description] != nil {// does key exist?
+
+        let lat = Double(view.annotation?.coordinate.latitude ?? 0)
+        let lon = Double(view.annotation?.coordinate.longitude ?? 0)
             
-            
-            self.performSegue(withIdentifier: "pushCollec", sender: self ) //if yes pass true
+            for pin in pins {
+                if pin.latitude == lat && pin.longitude == lon {
+            self.performSegue(withIdentifier: "pushCollec", sender: pin ) //if yes pass true
             print("$$$$$$$$This is the tread: \(Thread.current)")
-        }
-        else { //If pin isn't in dictionary pass nothing
-            
-            print("&&&&&&&&&&&&&&")
-            print(AdditionalDataStruct.annotationPinKey!)
-            //            mapView.
-            print("%%%%%%%%%%%%%%% \(Thread.current)")
-            
-            let TravelLocationsController:UIViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "photoAlbum") as UIViewController //nothing passed
-            
-            if view.isSelected {
-                self.present(TravelLocationsController, animated: true,completion: didSelectHandler)
+            mapView.deselectAnnotation(view.annotation, animated: false)
+
             }
-            
         }
-        mapView.deselectAnnotation(view.annotation, animated: false)
     }
-    
+
     func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
         //view.annotation.
         
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+        print("Made it 1")
         if segue.identifier == "pushCollec" {
+            print("Made it 2")
             let key = segue.destination as! PhotoAlbumController
-            key.keyExists = true
-            
+//            key.selectedPin = (sender as! Pin)
+            key.selectedPin = (sender as! Pin)
+            print("Made it 3")
             key.dataController = dataController
             
         }
     }
+    
     
     func didSelectHandler() {
         //        mapView.deselectAnnotation(view.annotation, animated: false)
