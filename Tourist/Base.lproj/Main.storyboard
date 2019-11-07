@@ -100,7 +100,7 @@
                                 <rect key="frame" x="110" y="735" width="130" height="37"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.96078431369999995" green="0.85490196080000003" blue="0.1058823529" alpha="1" colorSpace="calibratedRGB"/>
-                                <state key="normal" title="New Collection" image="Rectangle" backgroundImage="Rectangle"/>
+                                <state key="normal" title="New Collection"/>
                                 <state key="selected" image="Rectangle"/>
                                 <connections>
                                     <action selector="NewCollectionButton:" destination="UTo-ni-KOt" eventType="touchUpInside" id="Wcw-tp-QDG"/>

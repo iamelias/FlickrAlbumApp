@@ -160,12 +160,12 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
         return
     }
     
-    func formthrowableURL(_ i: Int) throws -> String {
-        
-    let LocationsUrl = "https://farm\(PhotoDataStruct.savedPhotoData[i].farm!).staticflickr.com/\(PhotoDataStruct.savedPhotoData[i].server!)/\(PhotoDataStruct.savedPhotoData[i].id!)_\(PhotoDataStruct.savedPhotoData[i].secret!)_m.jpg"
-        
-        return LocationsUrl
-    }
+//    func formthrowableURL(_ i: Int) throws -> String {
+//
+//    let LocationsUrl = "https://farm\(PhotoDataStruct.savedPhotoData[i].farm).staticflickr.com/\(PhotoDataStruct.savedPhotoData[i].server)/\(PhotoDataStruct.savedPhotoData[i].id)_\(PhotoDataStruct.savedPhotoData[i].secret)_m.jpg"
+//
+//        return LocationsUrl
+//    }
     
     func createUrl(_ i: Int) { //*************** passing counter
         print("made it to createUrl method")
@@ -173,52 +173,56 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
         //Full method is completed for each iteration
         //setting up url using i for element for each photo call using
         
-        let LocationsUrl = "https://farm\(PhotoDataStruct.savedPhotoData[i].farm!).staticflickr.com/\(PhotoDataStruct.savedPhotoData[i].server!)/\(PhotoDataStruct.savedPhotoData[i].id!)_\(PhotoDataStruct.savedPhotoData[i].secret!)_m.jpg"
+        let LocationsUrl = "https://farm\(PhotoDataStruct.savedPhotoData[i].farm).staticflickr.com/\(PhotoDataStruct.savedPhotoData[i].server)/\(PhotoDataStruct.savedPhotoData[i].id)_\(PhotoDataStruct.savedPhotoData[i].secret)_m.jpg"
         
         let convertedPhotoUrl = URL(string: LocationsUrl) //converting string to url
-        addPhoto(convertedPhotoUrl!)
         PhotoAlbumController.convertUrl = convertedPhotoUrl! //storing copy converted Url in static variable /*uncessary*
+        print(convertedPhotoUrl!)
+        PhotoClient.requestImageFile(sUrl: convertedPhotoUrl!, passingPin: selectedPin!, completionHandler: self.handleURLImageResponse(downloadedImage:error:))
+       
+        //addPhoto(convertedPhotoUrl!)
 //        PhotoClient.requestImageFile(sUrl: convertedPhotoUrl!, passingPin: selectedPin!, completionHandler: self.handleURLImageResponse(downloadedImage:error:))
-        print("I returned to createURL after request image call")
-        return
+        //print("I returned to createURL after request image call")
+        //return
     }
     
-    func addPhoto(_ photoURL: URL) {
-        var imageData = UIImage(named: "VirtualTourist_120")?.jpegData(compressionQuality: 0.8)
-        
-    PhotoClient.requestImageFile(sUrl: photoURL, passingPin: selectedPin!, completionHandler: self.handleURLImageResponse(downloadedImage:error:))
-        
-        do {
-             imageData = try Data(contentsOf: photoURL)
-        }
-        catch {
-            print("failure in addPhoto contentsOfData attempt")
-        }
-        
-        let persistPhoto = Photo(context: dataController.viewContext)
-        persistPhoto.url = photoURL.description
-        persistPhoto.image = imageData
-        persistPhoto.creationDate = Date()
-        persistPhoto.latitude = selectedPin.latitude
-        persistPhoto.longitude = selectedPin.longitude
-        photos.append(persistPhoto)
-        
-        do {
-            try dataController.viewContext.save()
-        }
-        
-        catch let error {
-            print("Failed to save photo in addPhoto() because of \(error)")
-            
-        }
-        
-        DispatchQueue.main.async {
-            print("final reload of collecView")
-            self.collecView.reloadData()
-        }
-        
-        return
-    }
+//    func addPhoto(_ photoURL: URL) {
+//
+//
+//
+//    PhotoClient.requestImageFile(sUrl: photoURL, passingPin: selectedPin!, completionHandler: self.handleURLImageResponse(downloadedImage:error:))
+//
+////        do {
+////             imageData = try Data(contentsOf: photoURL)
+////        }
+////        catch {
+////            print("failure in addPhoto contentsOfData attempt")
+////        }
+////
+////        let persistPhoto = Photo(context: dataController.viewContext)
+////        persistPhoto.url = photoURL.description
+////       // persistPhoto.image = imageData
+////        persistPhoto.creationDate = Date()
+////        persistPhoto.latitude = selectedPin.latitude
+////        persistPhoto.longitude = selectedPin.longitude
+////        photos.append(persistPhoto)
+////
+////        do {
+////            try dataController.viewContext.save()
+////        }
+////
+////        catch let error {
+////            print("Failed to save photo in addPhoto() because of \(error)")
+////
+////        }
+////
+////        DispatchQueue.main.async {
+////            print("final reload of collecView")
+////            self.collecView.reloadData()
+////        }
+////
+////        return
+//    }
     
     
     @IBAction func cancelButton(_ sender: Any) {
@@ -232,7 +236,8 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize { // ****************
-        return CGSize(width: 100, height: 100) //3 cells per width on iphone xs
+        let width = (view.frame.width - 20)/3
+        return CGSize(width: width, height: 100) //3 cells per width on iphone xs
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -268,10 +273,10 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
 
         }
         
-//        PhotoClient.getPhotos(selectedPin, completion: self.handlePhotoResponse(success: error:))
-//
-//        print(photos.count)
-//        collecView.reloadData()
+        PhotoClient.getPhotos(selectedPin, completion: self.handlePhotoResponse(success: error:))
+
+        print(photos.count)
+        collecView.reloadData()
 //
         return
     }
@@ -282,67 +287,39 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
 
 
     func handleURLImageResponse(downloadedImage: UIImage?, error: Error?) {//**************
-        print("made it to handleURLIMageResponse")
-        guard downloadedImage != nil else { //checking if download image = nil
-            print("download image = nil")
-            return
+        
+        var imageData = UIImage(named: "VirtualTourist_120")?.jpegData(compressionQuality: 0.8)
+        
+        if downloadedImage != nil {
+         imageData = downloadedImage?.jpegData(compressionQuality: 0.8)
         }
-
-//        guard error != nil else { //if there was error retrieving photo
-//            print("error in handleURLImageResponse")
-//            return
-//        }
-
-//        let imageData = downloadedImage as! Data
-//        do {
-//        let imageData = try Data(contentsOf: PhotoAlbumController.convertUrl)
-//        }
-//        catch {
-//            imageData = UIImage(named: "VirtualTourist_120" )?.jpegData(compressionQuality: 0.8)
-//        }
-//
-        let imageData = try? Data(contentsOf: PhotoAlbumController.convertUrl)
-        //Note: Don't need a download can just use contentsOf: to extract imageData for each Url
-        //Note: use placeholder to replace picture if nil is present using catch statement
-
-        print("made it to coreData addition")
-     //  addedImages.append(downloadedImage!)
-
-      //  let binaryData = downloadedImage?.jpegData(compressionQuality: 0.8)
-       // let dataDownloadImage = downloadedImage?.jpegData(compressionQuality: 0.8) //converting uiimage to data
-        //let dataImg = downloadedImage?.pngData() //if I want to convert to png
-//
-        let corePhoto = Photo(context: dataController!.viewContext) //creating reference of Photo entity
-//        corePhoto.image = dataDownloadImage //storing photo as binary data
-        corePhoto.image = imageData
-        print(corePhoto.image!)
-        //corePhoto.image = binaryData
-        corePhoto.creationDate = Date()
-        corePhoto.url = PhotoAlbumController.convertUrlString //storing url as string
-       // corePhoto.url = PhotoAlbumController.convertUrl.description
-        corePhoto.latitude = selectedPin.latitude
-        corePhoto.longitude = selectedPin.longitude
-//        corePhoto.pin?.latitude = selectedPin.latitude //storing lat as double
-//        corePhoto.pin?.longitude = selectedPin.longitude //storing long as double
-        print("aboutt to add to core data")
-        photos.append(corePhoto) // adding new corePhoto
+        else {
+            print("There was an error with assigning image to imageData)")
+        }
+        
+        let persistPhoto = Photo(context: dataController.viewContext)
+        persistPhoto.url = PhotoAlbumController.convertUrl.description
+         persistPhoto.image = imageData
+        persistPhoto.creationDate = Date()
+        persistPhoto.latitude = selectedPin.latitude
+        persistPhoto.longitude = selectedPin.longitude
+        photos.append(persistPhoto)
+        
         do {
-            print("saving to core data")
-            try? dataController!.viewContext.save() //saving corePhoto to CoreData Tourist
+            try dataController.viewContext.save()
         }
+            
         catch let error {
-            print("failed to save photo url because of: \(error)")
+            print("Failed to save photo in addPhoto() because of \(error)")
+            
         }
-
+        
         DispatchQueue.main.async {
             print("final reload of collecView")
-            self.collecView.reloadData() //reloading collecView to show new Image
-            }
+            self.collecView.reloadData()
+        }
+        
 
-//        for i in 0..<photos.count {
-//            dataController!.viewContext.delete(photos[i])
-//            try? dataController!.viewContext.save()
-//        }
         return
     }
 
