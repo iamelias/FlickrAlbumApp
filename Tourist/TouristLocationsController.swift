@@ -93,7 +93,7 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
         print("^^^^^^^^^^^")
         try? dataController!.viewContext.save()
         pins.insert(pin, at: 0)
-        pins.append(pin)
+       // pins.append(pin)
         //pins.insert(pin, at: 0)
     }
     

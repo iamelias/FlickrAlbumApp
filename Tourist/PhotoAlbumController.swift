@@ -41,19 +41,34 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
         let sortDescriptor = NSSortDescriptor(key: "creationDate", ascending: false ) //top is newest photos
         fetchRequest.sortDescriptors = [sortDescriptor] //fetch will be sorted by creationDate ascending
         var result:[Photo] = [] //to hold fetched core data
+        
+//        if let inResult = try? dataController?.viewContext.fetch(fetchRequest) {
+//            result = inResult
+//            print("%%%%%%%%%%%%%%%%%%%%%")
+//            print(inResult.count)
+//            print(inResult)
+//            print("@@@@")
+//            print(result.isEmpty)
+//            print("%%%%%%%%%%%%%%%%%%%%%")
+//        }
+//        else {
+//            print("unable to fetch")
+//        }
+        
         do {
-        let inResult = try dataController.viewContext.fetch(fetchRequest)
+        let inResult = try self.dataController.viewContext.fetch(fetchRequest)
             print("%%%%%%%%%%%%%%%%%%%%%")
             print(inResult.count)
             print(inResult)
             print("%%%%%%%%%%%%%%%%%%%%%")
             result = inResult
-            
+
         }
         catch let error {
             print("There is error: \(error)")
         }
         
+        print(result.isEmpty)
         if result.isEmpty {
             print("^^^^^^^^^^^")
             print(result.count)
@@ -155,7 +170,7 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
         }
         
         print("calling collecViewreload in handlePhotoResponse")
-        collecView.reloadData()
+        self.collecView.reloadData()
         print("reached end of handlePhotoResponse")
         return
     }
@@ -251,15 +266,37 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Photocell", for: indexPath) as! photoCollectionCell
         
+        guard photos[indexPath.row].image != nil else {
+            
+            cell.cellView.image = nil
+            return cell
+        }
+        if photos[indexPath.row].image != nil {
         cell.cellView.image = UIImage(named: "VirtualTourist_120") // default image first load
-    
-        cell.cellView.image = UIImage(data: (photos[indexPath.row].image!)) //assinging image
         
+        
+        
+        cell.cellView.image = UIImage(data: (photos[indexPath.row].image!)) //assinging image
+        }
+        
+    
+    
         return cell
         
     }
-
+  
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath:IndexPath) {//********
+        
+        self.dataController.viewContext.delete(photos[indexPath.row])
+        do {
+            try self.dataController.viewContext.save()
+            collecView.reloadData()
+        }
+        catch {
+            print("error removing from collecView")
+        }
+    
     }
     
     @IBAction func NewCollectionButton(_ sender: Any) { //This is going to empty coreData photos array and recall
@@ -267,17 +304,25 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
     //Delete from CoreData code
         print(photos.count)
         for i in 0..<photos.count {
-            dataController.viewContext.delete(photos[i])
-            try? dataController!.viewContext.save()
-
-
+            self.dataController.viewContext.delete(photos[i])
+            //try? dataController!.viewContext.save()
+            
+            do {
+                try self.dataController.viewContext.save()
+                //photos.removeAll()
+               // self.collecView.reloadData()
+            }
+            catch {
+                print("There was error deleting")
+                return
+            }
         }
-        
-        PhotoClient.getPhotos(selectedPin, completion: self.handlePhotoResponse(success: error:))
-
-        print(photos.count)
+        photos.removeAll()
         collecView.reloadData()
-//
+            PhotoClient.getPhotos(selectedPin, completion: self.handlePhotoResponse(success: error:))
+        
+        print(photos.count)
+        self.collecView.reloadData()
         return
     }
     
@@ -288,38 +333,56 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
 
     func handleURLImageResponse(downloadedImage: UIImage?, error: Error?) {//**************
         
-        var imageData = UIImage(named: "VirtualTourist_120")?.jpegData(compressionQuality: 0.8)
+        var imageData = UIImage(named: "VirtualTourist_120")?.jpegData(compressionQuality: 0.1)
         
+        
+        if downloadedImage == nil {
+            print("download is nil")
+        }
+
         if downloadedImage != nil {
-         imageData = downloadedImage?.jpegData(compressionQuality: 0.8)
+            imageData = downloadedImage!.jpegData(compressionQuality: 0.5)
         }
         else {
             print("There was an error with assigning image to imageData)")
         }
-        
+        print("download response reached")
+        print("&&&&&&&&&&&&&&&&&&&&")
         let persistPhoto = Photo(context: dataController.viewContext)
         persistPhoto.url = PhotoAlbumController.convertUrl.description
-         persistPhoto.image = imageData
+        print(persistPhoto.url)
+        persistPhoto.image = imageData
+        print(persistPhoto.image)
         persistPhoto.creationDate = Date()
+        print(persistPhoto.creationDate)
         persistPhoto.latitude = selectedPin.latitude
+        print(persistPhoto.latitude)
         persistPhoto.longitude = selectedPin.longitude
+        print(persistPhoto.longitude)
+        persistPhoto.pin = selectedPin
         photos.append(persistPhoto)
         
+        
+        print("&&&&&&&&&&&&&&&&&&&&&&")
+      //  photos.insert(persistPhoto, at: 0)
+
+//        try? dataController.viewContext.save()
+
+
         do {
-            try dataController.viewContext.save()
+            print("saving")
+            try self.dataController.viewContext.save()
         }
-            
+
         catch let error {
             print("Failed to save photo in addPhoto() because of \(error)")
-            
+
         }
         
         DispatchQueue.main.async {
             print("final reload of collecView")
             self.collecView.reloadData()
         }
-        
-
         return
     }
 

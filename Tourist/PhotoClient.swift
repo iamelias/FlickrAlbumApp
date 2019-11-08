@@ -21,7 +21,7 @@ class PhotoClient {
         
         let randomPage = Int.random(in: 1..<6)
         
-        let photoEndpointRequest = URLRequest(url: URL(string: "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=9c023ba4945ad4e3608893500bd25d42&lat=\(selectedPin.latitude)&lon=\(selectedPin.longitude)&per_page=10&page=\(randomPage)&format=json&nojsoncallback=1")!)
+        let photoEndpointRequest = URLRequest(url: URL(string: "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=9c023ba4945ad4e3608893500bd25d42&lat=\(selectedPin.latitude)&lon=\(selectedPin.longitude)&per_page=3&page=\(randomPage)&format=json&nojsoncallback=1")!)
         
         
 //        https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=9c023ba4945ad4e3608893500bd25d42&lat=34.0522&lon=118.2437&per_page=10&page=\(randomPage)&format=json&nojsoncallback=1
@@ -84,9 +84,9 @@ class PhotoClient {
                     }
                     else {
                         //   print("URLInfo has value")
-                        DispatchQueue.global().async{
+                      //  DispatchQueue.global().async{
                             completionHandler(downloadedImage, nil) //sending downloadedImage
-                        }
+                     //   }
                         
                     }
                     
