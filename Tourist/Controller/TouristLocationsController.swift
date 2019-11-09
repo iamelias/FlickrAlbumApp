@@ -28,7 +28,7 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
     
     func retrieveCoreData() { //retrieves persisted pin objects from core data
         let fetchRequest: NSFetchRequest<Pin> = Pin.fetchRequest()
-
+        
         let sortDescriptor = NSSortDescriptor(key: "creationDate", ascending: false) //pins added in creation date descending order. Most recent and the top.
         fetchRequest.sortDescriptors = [sortDescriptor]
         
@@ -47,13 +47,13 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
     
     func recreateAnno(pins: [Pin]) { //recreates persisted pin annotation
         if !pins.isEmpty { //if there are persisted pins
-        for i in 0..<pins.count { //for each pin
-            
-            let annotation = MKPointAnnotation() //create annotation
-
-            annotation.coordinate = CLLocationCoordinate2D(latitude: pins[i].latitude, longitude: pins[i].longitude) //make annotation's coordinate from pin objects saved lat and long
-            mapView.addAnnotation(annotation) //add the new annotation
-        }
+            for i in 0..<pins.count { //for each pin
+                
+                let annotation = MKPointAnnotation() //create annotation
+                
+                annotation.coordinate = CLLocationCoordinate2D(latitude: pins[i].latitude, longitude: pins[i].longitude) //make annotation's coordinate from pin objects saved lat and long
+                mapView.addAnnotation(annotation) //add the new annotation
+            }
             return
         }
         else {
@@ -117,15 +117,15 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         mapView.deselectAnnotation(view.annotation, animated: false)
-  
+        
         let lat = Double(view.annotation?.coordinate.latitude ?? 0)
         let lon = Double(view.annotation?.coordinate.longitude ?? 0)
-            
-            for pin in pins {
-                if pin.latitude == lat && pin.longitude == lon { //condition persisted pin check
-            self.performSegue(withIdentifier: "pushCollec", sender: pin ) //segueing and sending selected pin
-//            print("\(Thread.current)")
-            mapView.deselectAnnotation(view.annotation, animated: false) //deselecting pin so reselect works
+        
+        for pin in pins {
+            if pin.latitude == lat && pin.longitude == lon { //condition persisted pin check
+                self.performSegue(withIdentifier: "pushCollec", sender: pin ) //segueing and sending selected pin
+                //            print("\(Thread.current)")
+                mapView.deselectAnnotation(view.annotation, animated: false) //deselecting pin so reselect works
             }
         }
     }
@@ -139,7 +139,7 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
         
         if annotationImage == nil {
             annotationImage = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-
+            
         } else {
             annotationImage!.annotation = annotation
         }

@@ -15,7 +15,7 @@ import CoreGraphics
 class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
     static var convertUrl: URL = URL(string: "Init")!
-   
+    
     var dataController: DataController!
     
     @IBOutlet weak var collecView: UICollectionView!
@@ -39,7 +39,7 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
         var result:[Photo] = [] //array holds fetched photos
         photos = result
         do {
-        let inResult = try self.dataController.viewContext.fetch(fetchRequest) //fetching photos
+            let inResult = try self.dataController.viewContext.fetch(fetchRequest) //fetching photos
             result = inResult
         }
         catch let error {
@@ -54,17 +54,17 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
         }
             
         else {
-        photos = result.reversed() //Use results if not empty
-        DispatchQueue.main.async {
-        self.collecView.reloadData()
-        }
-        return
+            photos = result.reversed() //Use results if not empty
+            DispatchQueue.main.async {
+                self.collecView.reloadData()
+            }
+            return
         }
     }
     
     func handlePhotoResponse(success: Bool, error: Error?) {//***************
         if success == true { // if success is returned
-                if PhotoDataStruct.savedPhotoData.count == 0 { //present alert if call is made but no response objects are returned
+            if PhotoDataStruct.savedPhotoData.count == 0 { //present alert if call is made but no response objects are returned
                 
                 let alert = UIAlertController(title: "No Photos", message: "There are no photos at this location", preferredStyle: .alert
                 )
@@ -76,18 +76,18 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
                 present(alert,animated: true,completion: nil)
                 return
             }
-                else { //if 1 or more response objects are returned
-                    
-           // collecView.reloadData()
-            
-            DispatchQueue.global(qos: .background).async {
-            for i in 0..<PhotoDataStruct.savedPhotoData.count {
-            self.createUrl(i) //i is counter starting at 0 in loop. creating url for each response object
-                        }
+            else { //if 1 or more response objects are returned
+                
+                // collecView.reloadData()
+                
+                DispatchQueue.global(qos: .background).async {
+                    for i in 0..<PhotoDataStruct.savedPhotoData.count {
+                        self.createUrl(i) //i is counter starting at 0 in loop. creating url for each response object
                     }
+                }
             }
         }
-        
+            
         else if success == false { //if false is returned // Display a localized error alert
             let alert = UIAlertController(title: "Error", message: error?.localizedDescription, preferredStyle: .alert
             )
@@ -111,7 +111,7 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
         PhotoAlbumController.convertUrl = convertedPhotoUrl //storing copy converted Url in static variable
         PhotoClient.requestImageFile(sUrl: convertedPhotoUrl, passingPin: selectedPin!, completionHandler: self.handleURLImageResponse(downloadedImage:error:)) //calling for url's data
     }
-
+    
     func handleURLImageResponse(downloadedImage: UIImage?, error: Error?) { //*****************
         var imageData = UIImage(named: "VirtualTourist_120")?.jpegData(compressionQuality: 0.1) //init image data to placeholder image
         
@@ -119,7 +119,7 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
             
             imageData = downloadedImage!.jpegData(compressionQuality: 0.5) //if image exists replace placeholder
         }
-
+        
         let persistPhoto = Photo(context: dataController.viewContext) //defining persisted data attributes
         persistPhoto.url = PhotoAlbumController.convertUrl.description
         persistPhoto.image = imageData
@@ -128,11 +128,11 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
         persistPhoto.longitude = selectedPin.longitude
         persistPhoto.pin = selectedPin
         photos.append(persistPhoto) //adding photo to local array
-
+        
         do {
             try self.dataController.viewContext.save()
         }
-
+            
         catch let error {
             print("Failed to save photo in addPhoto() because of \(error)")
         }
@@ -188,14 +188,14 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Photocell", for: indexPath) as! photoCollectionCell
         
         cell.cellView.image = UIImage(named: "VirtualTourist_120") // default image first load
-
+        
         
         guard photos[indexPath.row].image != nil else {//***********
             
             cell.cellView.image = nil
             return cell
         }
-                cell.cellView.image = UIImage(data: (self.photos[indexPath.row].image!)) //assinging image
+        cell.cellView.image = UIImage(data: (self.photos[indexPath.row].image!)) //assinging image
         
         return cell
     }
