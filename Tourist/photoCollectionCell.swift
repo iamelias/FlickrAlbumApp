@@ -13,9 +13,9 @@ final class photoCollectionCell: UICollectionViewCell {
     
     @IBOutlet weak var cellView: UIImageView!
     
-//    var placeHolderImage: UIImage! {
-//        didSet {
-//            cellView.image = UIImage(named: "VirtualTourist_120" )
-//        }
-//    }
+    var placeHolderImage: UIImage! {
+        didSet {
+            cellView.image = UIImage(named: "VirtualTourist_120" )
+        }
+    }
 }

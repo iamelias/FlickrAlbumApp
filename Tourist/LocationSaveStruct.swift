@@ -12,8 +12,8 @@ struct PhotoDataStruct {
     static var savedPhotoData: [PhotoResponse] = []
 }
 
-struct PhotoPageStruct {
-    static var savedPageInfo: [PhotoJSON1] = []
-}
+//struct PhotoPageStruct {
+//    static var savedPageInfo: [PhotoJSON1] = []
+//}
 
 

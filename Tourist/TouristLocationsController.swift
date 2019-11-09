@@ -15,8 +15,7 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
     
     @IBOutlet weak var mapView: MKMapView!
     
-    static var myAnnotations: [MKAnnotation] = [] //holding all annotations
-    var pins: [Pin] = []
+    var pins: [Pin] = [] //saved persisted pin objects
     
     var dataController: DataController?
     
@@ -25,110 +24,57 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
         self.navigationController?.navigationBar.isHidden = true
         mapView.delegate = self
         retrieveCoreData()
-        
     }
     
-    func retrieveCoreData() {
-        print("Inside retrieveCoreData")
+    func retrieveCoreData() { //retrieves persisted pin objects from core data
         let fetchRequest: NSFetchRequest<Pin> = Pin.fetchRequest()
 
-        let sortDescriptor = NSSortDescriptor(key: "creationDate", ascending: false)
-        fetchRequest.sortDescriptors = [sortDescriptor] //returning objects in order of creation date
+        let sortDescriptor = NSSortDescriptor(key: "creationDate", ascending: false) //pins added in creation date descending order. Most recent and the top.
+        fetchRequest.sortDescriptors = [sortDescriptor]
         
-        //predicate used to filter results
-        
-        if let result = try? dataController?.viewContext.fetch(fetchRequest) {
-            pins = result
+        if let result = try? dataController?.viewContext.fetch(fetchRequest) { //fetching persisted pins
+            pins = result //storing in pins array for use in class
             
-            print("******************** \(pins)")
-            addPinMap(pins: pins)
+            recreateAnno(pins: pins) //sending pins array containing petched pins to annotation creation
             return
         }
         else {
             print("unable to fetch")
             return
         }
-  
+        
     }
     
-    func addPinMap(pins: [Pin]) {
-        if !pins.isEmpty {
-            print("There is a pin")
-        for i in 0..<pins.count {
-            print(pins.count)
-            let annotation = MKPointAnnotation()
-          //  annotation.coordinate.latitude = pins[i].latitude
-            //annotation.coordinate.longitude = pins[i].longitude
+    func recreateAnno(pins: [Pin]) { //recreates persisted pin annotation
+        if !pins.isEmpty { //if there are persisted pins
+        for i in 0..<pins.count { //for each pin
             
-            annotation.coordinate = CLLocationCoordinate2D(latitude: pins[i].latitude, longitude: pins[i].longitude)
-            print("$$$$$$$ \(annotation.coordinate)")
-            mapView.addAnnotation(annotation)
-//            if pins[i].annotationKey == nil { continue }
-//            mapView.addAnnotation(pins[i].annotationKey as! MKPointAnnotation)
+            let annotation = MKPointAnnotation() //create annotation
+
+            annotation.coordinate = CLLocationCoordinate2D(latitude: pins[i].latitude, longitude: pins[i].longitude) //make annotation's coordinate from pin objects saved lat and long
+            mapView.addAnnotation(annotation) //add the new annotation
         }
             return
         }
         else {
-            print("There is no pin")
+            print("There are currently are no persisted pins")
             return
         }
     }
     
-    func viewDidAppear() {
-        mapView.removeAnnotations(TouristLocationsController.myAnnotations)
-        //        mapView.addAnnotations(TravelLocationsController.myAnnotations)
-    }
-    
-    func addPins(_ passedPin: MKPointAnnotation) { //saving pin to coreData Container
-        let pin = Pin(context: dataController!.viewContext)
-        pin.annotationKey = AdditionalDataStruct.annotationPinKey
-        pin.creationDate = Date()
-        pin.latitude = passedPin.coordinate.latitude
-        pin.longitude = passedPin.coordinate.longitude
-//        pin.latitude = CoordinateStruct.latitude
-//        pin.longitude = CoordinateStruct.longitude
-        print("^^^^^^^^^^^")
-        print(pin.longitude)
-        print(pin.latitude)
-        print("^^^^^^^^^^^")
-        try? dataController!.viewContext.save()
-        pins.insert(pin, at: 0)
-       // pins.append(pin)
-        //pins.insert(pin, at: 0)
-    }
-    
-    func deletePins(_ passedPin: MKPointAnnotation) {
-        //let pin = Pin(context: dataController!.viewContext)
-        for i in 0..<pins.count {
-        dataController!.viewContext.delete(pins[i])
-        try? dataController!.viewContext.save()
-        }
-    }
-    
     @IBAction func longPressPin(_ sender: UILongPressGestureRecognizer) { //adding annotation
-        
         let annotation = MKPointAnnotation() //creating annotation
         
         let pinView = sender.location(in: self.mapView)//Getting location from tap
+        // Add annotation alert with ok and cancel to add annotation
         let alert = UIAlertController(title: "Add", message: "Do you want to add a location?", preferredStyle: .alert)
         
-        //OK Action is being called after code below that is why addpin isnt working, try adding completion handler to okaction.
         let okAction = UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction) in
-    
-            //getting coordinates from tapped location assigning in pinCoordinate
-            let pinCoordinate = self.mapView.convert(pinView, toCoordinateFrom: self.mapView)
             
-            //Assigning in static var in CoordinateStruct. another option is to create a non static pin object and give it long and lat properties.
-            CoordinateStruct.latitude = pinCoordinate.latitude
-            CoordinateStruct.longitude = abs(pinCoordinate.longitude)
-            print("&&&&&&&&&&\(CoordinateStruct.latitude)... \(CoordinateStruct.longitude)")
+            annotation.coordinate = self.mapView.convert(pinView, toCoordinateFrom: self.mapView)
             
-            annotation.coordinate = pinCoordinate //Giving pin annotation it's coordinates
             self.addPins(annotation)
-           // self.deletePins(annotation)
             
-            print("$$$$$$$$$$$ \(annotation.coordinate.latitude), \(annotation.coordinate.longitude)")
-
         })
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: {(action: UIAlertAction) in
@@ -139,65 +85,48 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
         alert.addAction(cancelAction) // adding cancel to alert
         
         self.present(alert, animated: true, completion: nil) //Display Alert
-                
-        //Add Pin Alert ********************
-        TouristLocationsController.myAnnotations.append(annotation) //storing annotations for Core Data
-        self.mapView.addAnnotation(annotation) //Adding Annotation pin to map
         
+        self.mapView.addAnnotation(annotation) //Adding Annotation pin to map
     }
     
-    //**********
+    
+    func addPins(_ passedPin: MKPointAnnotation) { //saving pin to coreData Container
+        let pin = Pin(context: dataController!.viewContext) //defining persisted pin attribute data
+        pin.creationDate = Date()
+        pin.latitude = passedPin.coordinate.latitude
+        pin.longitude = passedPin.coordinate.longitude
+        try? dataController!.viewContext.save() //saving pin object and it's new attributes
+        pins.insert(pin, at: 0) //adding new pin to front of pins array
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "pushCollec" { //segue used pushes to collectionView
+            let key = segue.destination as! PhotoAlbumController //data to be sent to PhotoAlbum Controller
+            key.selectedPin = (sender as! Pin)
+            key.dataController = dataController
+        }
+    }
+    
+    func deletePins() { //delete persisted pins. If want to clear core data. To use add call somewhere.
+        for i in 0..<pins.count {
+            dataController!.viewContext.delete(pins[i])
+            try? dataController!.viewContext.save()
+        }
+        pins.removeAll()
+    }
+    
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         mapView.deselectAnnotation(view.annotation, animated: false)
-
-        print("^^^^^: \(Thread.current)")
-        
-        //let test = String(view.annotation! as! String)
-        
-        let test = view.annotation?.description
-        print("********#########$$$$$$$\(test!)")
-        print(type(of: test!))
-
+  
         let lat = Double(view.annotation?.coordinate.latitude ?? 0)
         let lon = Double(view.annotation?.coordinate.longitude ?? 0)
             
             for pin in pins {
-                if pin.latitude == lat && pin.longitude == lon {
-            self.performSegue(withIdentifier: "pushCollec", sender: pin ) //if yes pass true
-            print("$$$$$$$$This is the tread: \(Thread.current)")
-            mapView.deselectAnnotation(view.annotation, animated: false)
-
+                if pin.latitude == lat && pin.longitude == lon { //condition persisted pin check
+            self.performSegue(withIdentifier: "pushCollec", sender: pin ) //segueing and sending selected pin
+//            print("\(Thread.current)")
+            mapView.deselectAnnotation(view.annotation, animated: false) //deselecting pin so reselect works
             }
-        }
-    }
-
-    func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
-        //view.annotation.
-        
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
-        print("Made it 1")
-        if segue.identifier == "pushCollec" {
-            print("Made it 2")
-            let key = segue.destination as! PhotoAlbumController
-//            key.selectedPin = (sender as! Pin)
-            key.selectedPin = (sender as! Pin)
-            print("Made it 3")
-            key.dataController = dataController
-            
-        }
-    }
-    
-    
-    func didSelectHandler() {
-        //        mapView.deselectAnnotation(view.annotation, animated: false)
-        DispatchQueue.global().sync{
-            self.mapView.removeAnnotations(TouristLocationsController.myAnnotations)
-            self.mapView.addAnnotations(TouristLocationsController.myAnnotations)
-            
-            return
         }
     }
     
@@ -205,13 +134,12 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
         guard annotation is MKPointAnnotation else { return nil }
         
         let identifier = "pinView" //Creating pin
-        var annotationImage: MKPinAnnotationView? = nil
+        var annotationImage: MKPinAnnotationView? = nil //pin image setup
         annotationImage = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKPinAnnotationView
         
         if annotationImage == nil {
             annotationImage = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-            //            annotationImage!.canShowCallout = true
-            //            annotationImage!.annotation?.title = "Location"
+
         } else {
             annotationImage!.annotation = annotation
         }

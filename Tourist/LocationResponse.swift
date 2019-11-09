@@ -6,10 +6,10 @@
 //  Copyright © 2019 Elias Hall. All rights reserved.
 //
 
-import Foundation
-
-struct LocationResponse: Codable { //holding photos for display
-    
-    let photo: [PhotoResponse]
-    
-}
+//import Foundation
+//
+//struct LocationResponse: Codable { //holding photos for display
+//    
+//    let photo: [PhotoResponse]
+//    
+//}
