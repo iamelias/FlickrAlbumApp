@@ -45,10 +45,12 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
         catch let error {
             print("There is error: \(error)")
         }
+        
         collecView.reloadData()
         if result.isEmpty { //If no photos are persisted for pin call client
-                PhotoClient.getPhotos(selectedPin, completion: self.handlePhotoResponse(success: error:))
-            
+            DispatchQueue.global(qos: .background).async {
+                PhotoClient.getPhotos(self.selectedPin, completion: self.handlePhotoResponse(success: error:))
+            }
         }
             
         else {
@@ -75,9 +77,13 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
                 return
             }
                 else { //if 1 or more response objects are returned
+                    
+           // collecView.reloadData()
             
+            DispatchQueue.global(qos: .background).async {
             for i in 0..<PhotoDataStruct.savedPhotoData.count {
-            createUrl(i) //i is counter starting at 0 in loop. creating url for each response object
+            self.createUrl(i) //i is counter starting at 0 in loop. creating url for each response object
+                        }
                     }
             }
         }
@@ -137,13 +143,11 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
         return
     }
     
-    
     @IBAction func cancelButton(_ sender: Any) { //*****************
         dismiss(animated: true) //return to TouristLocationsController
     }
     
     @IBAction func NewCollectionButton(_ sender: Any) { //***************
-        print(photos.count)
         for i in 0..<photos.count {
             self.dataController.viewContext.delete(photos[i]) //deleting persisted photos
             
@@ -155,7 +159,9 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
                 return
             }
         }
+        
         photos.removeAll() //removing photos from the in-class photo array
+        
         collecView.reloadData()
         PhotoClient.getPhotos(selectedPin, completion: self.handlePhotoResponse(success: error:)) //calling new photos
         
@@ -192,7 +198,6 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
                 cell.cellView.image = UIImage(data: (self.photos[indexPath.row].image!)) //assinging image
         
         return cell
-        
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath:IndexPath) {//********
