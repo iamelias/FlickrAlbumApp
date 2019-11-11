@@ -22,6 +22,7 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
     var dataController: DataController!
     
     @IBOutlet weak var collecView: UICollectionView!
+    @IBOutlet weak var controllerIndic: UIActivityIndicatorView!
     
     var selectedPin: Pin! //pin from TouristLocationsViewController
     var photos: [Photo] = [] //local array that stores photos associated with selected Pin
@@ -32,6 +33,9 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
         
         self.collecView.delegate = self
         self.collecView.dataSource = self
+        
+        controllerIndic.isHidden = false
+        controllerIndic.startAnimating() //starting transition activity controller
         
         let fetchRequest: NSFetchRequest<Photo> = Photo.fetchRequest()
         let predicate = NSPredicate(format: "pin == %@", selectedPin) //%@ will get replaced by selectedPin at runtime. Purpose is to get photos filtered for selected pin
@@ -68,6 +72,11 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
         }
     }
     
+    func viewDidAppear() {
+        controllerIndic.stopAnimating() //stoping transition activity indicator
+        controllerIndic.isHidden = true
+    }
+    
     func handlePhotoResponse(success: Bool, error: Error?) {//***************
         if success == true { // if success is returned
             //            let photoHolder = Photo()
@@ -77,7 +86,6 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
             DispatchQueue.main.async {
                 self.collecView.reloadData()
             }
-            
             
             if PhotoDataStruct.savedPhotoData.count == 0 { //present alert if call is made but no response objects are returned
                 

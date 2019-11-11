@@ -76,6 +76,10 @@
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
+                                <activityIndicatorView key="backgroundView" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" id="Q5B-yL-8s6">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="724"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                </activityIndicatorView>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Photocell" id="fE6-n9-dXu" customClass="photoCollectionCell" customModule="Tourist" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="119" height="107"/>
@@ -121,6 +125,7 @@
                     </view>
                     <connections>
                         <outlet property="collecView" destination="1XG-YH-O9k" id="zqE-wp-shx"/>
+                        <outlet property="controllerIndic" destination="Q5B-yL-8s6" id="3w8-U0-UZJ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gqH-d6-ARM" userLabel="First Responder" sceneMemberID="firstResponder"/>
