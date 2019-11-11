@@ -215,7 +215,7 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell { //************
         
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Photocell", for: indexPath) as! photoCollectionCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Photocell", for: indexPath) as! PhotoCollectionCell
         
         cell.cellView.image = UIImage(named: "VirtualTourist_120") // default image first load
         
@@ -231,14 +231,9 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
             }
         }
         
-        guard photos[indexPath.row].image != nil else {// replaces photo with placeholder when deleted
-            
-            cell.activityIndic.stopAnimating()
-            cell.activityIndic.isHidden = true
-            
-            cell.cellView.image = UIImage(named: "VirtualTourist_120")
-            return cell
-        }
+        cell.activityIndic.stopAnimating()
+        cell.activityIndic.isHidden = true
+        
         cell.cellView.image = UIImage(data: (self.photos[indexPath.row].image!)) //assinging image
         
         cell.activityIndic.stopAnimating()

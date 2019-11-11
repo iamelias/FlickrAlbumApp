@@ -40,7 +40,7 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
             return
         }
         else {
-            print("unable to fetch")
+            debugPrint("unable to fetch")
             return
         }
         

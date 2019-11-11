@@ -20,7 +20,7 @@
 		6447D48623656AD700887A6C /* PhotoClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6447D48523656AD700887A6C /* PhotoClient.swift */; };
 		6447D48823656B2900887A6C /* PhotoResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6447D48723656B2900887A6C /* PhotoResponse.swift */; };
 		6447D48E23656F7800887A6C /* PhotoAlbumController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6447D48D23656F7800887A6C /* PhotoAlbumController.swift */; };
-		6447D490236570DC00887A6C /* photoCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6447D48F236570DC00887A6C /* photoCollectionCell.swift */; };
+		6447D490236570DC00887A6C /* PhotoCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6447D48F236570DC00887A6C /* PhotoCollectionCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,7 +39,7 @@
 		6447D48523656AD700887A6C /* PhotoClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoClient.swift; sourceTree = "<group>"; };
 		6447D48723656B2900887A6C /* PhotoResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoResponse.swift; sourceTree = "<group>"; };
 		6447D48D23656F7800887A6C /* PhotoAlbumController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoAlbumController.swift; sourceTree = "<group>"; };
-		6447D48F236570DC00887A6C /* photoCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = photoCollectionCell.swift; sourceTree = "<group>"; };
+		6447D48F236570DC00887A6C /* PhotoCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCollectionCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,7 +100,7 @@
 			isa = PBXGroup;
 			children = (
 				6447D4732365005000887A6C /* DataController.swift */,
-				6447D48F236570DC00887A6C /* photoCollectionCell.swift */,
+				6447D48F236570DC00887A6C /* PhotoCollectionCell.swift */,
 				6447D48D23656F7800887A6C /* PhotoAlbumController.swift */,
 				6447D475236500E100887A6C /* TouristLocationsController.swift */,
 			);
@@ -179,7 +179,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6447D4742365005000887A6C /* DataController.swift in Sources */,
-				6447D490236570DC00887A6C /* photoCollectionCell.swift in Sources */,
+				6447D490236570DC00887A6C /* PhotoCollectionCell.swift in Sources */,
 				643F326F2364FBB700F90498 /* Tourist.xcdatamodeld in Sources */,
 				6447D48423656AB900887A6C /* PhotoJSON2.swift in Sources */,
 				643F32672364FBB700F90498 /* AppDelegate.swift in Sources */,
