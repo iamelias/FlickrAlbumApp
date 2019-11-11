@@ -36,6 +36,7 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
             pins = result //storing in pins array for use in class
             
             recreateAnno(pins: pins) //sending pins array containing petched pins to annotation creation
+//            deletePins() // restart map to see pins gone*****
             return
         }
         else {
@@ -54,6 +55,7 @@ class TouristLocationsController: UIViewController, MKMapViewDelegate {
                 annotation.coordinate = CLLocationCoordinate2D(latitude: pins[i].latitude, longitude: pins[i].longitude) //make annotation's coordinate from pin objects saved lat and long
                 mapView.addAnnotation(annotation) //add the new annotation
             }
+            
             return
         }
         else {

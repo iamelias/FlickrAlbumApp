@@ -15,6 +15,9 @@ import CoreGraphics
 class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
     static var convertUrl: URL = URL(string: "Init")!
+    static var placeHolderPhotos: [String?] = []
+    static var persistCheck1: Bool = false
+    static var persistCheck2: Bool = false
     
     var dataController: DataController!
     
@@ -55,15 +58,27 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
             
         else {
             photos = result.reversed() //Use results if not empty
-            DispatchQueue.main.async {
+            print(photos.count)
+            PhotoAlbumController.persistCheck1 = true
+            DispatchQueue.global(qos: .userInitiated).sync {
                 self.collecView.reloadData()
             }
+            //PhotoAlbumController.fromPersist = false
             return
         }
     }
     
     func handlePhotoResponse(success: Bool, error: Error?) {//***************
         if success == true { // if success is returned
+            //            let photoHolder = Photo()
+            //
+            PhotoAlbumController.placeHolderPhotos = [String](repeating: "placeHolder", count: PhotoDataStruct.savedPhotoData.count)
+            
+            DispatchQueue.main.async {
+                self.collecView.reloadData()
+            }
+            
+            
             if PhotoDataStruct.savedPhotoData.count == 0 { //present alert if call is made but no response objects are returned
                 
                 let alert = UIAlertController(title: "No Photos", message: "There are no photos at this location", preferredStyle: .alert
@@ -77,8 +92,6 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
                 return
             }
             else { //if 1 or more response objects are returned
-                
-                // collecView.reloadData()
                 
                 DispatchQueue.global(qos: .background).async {
                     for i in 0..<PhotoDataStruct.savedPhotoData.count {
@@ -169,6 +182,7 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
         return
     }
     
+    
     //*************** CollecView *******************
     func numberOfSections(in collectionView: UICollectionView) -> Int { //**********
         return 1 //1 section
@@ -180,7 +194,17 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {//*****
-        return photos.count //uses photos entity photos array
+        
+        if PhotoAlbumController.persistCheck1 == true {
+            PhotoAlbumController.persistCheck2 = true
+            print("entered")
+            return photos.count //for persisted photos
+        }
+            
+        else {
+            PhotoAlbumController.persistCheck2 = false
+            return PhotoAlbumController.placeHolderPhotos.count //for empty album
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell { //************
@@ -189,14 +213,31 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
         
         cell.cellView.image = UIImage(named: "VirtualTourist_120") // default image first load
         
+        cell.activityIndic.isHidden = false
+        cell.activityIndic.startAnimating()
         
-        guard photos[indexPath.row].image != nil else {//***********
+        if PhotoAlbumController.persistCheck1 == false {
+            if PhotoAlbumController.persistCheck2 == false {
+                guard (PhotoAlbumController.placeHolderPhotos.count - photos.count) == 0 else {
+                    
+                    return cell
+                }
+            }
+        }
+        
+        guard photos[indexPath.row].image != nil else {// replaces photo with placeholder when deleted
             
-            cell.cellView.image = nil
+            cell.activityIndic.stopAnimating()
+            cell.activityIndic.isHidden = true
+            
+            cell.cellView.image = UIImage(named: "VirtualTourist_120")
             return cell
         }
         cell.cellView.image = UIImage(data: (self.photos[indexPath.row].image!)) //assinging image
         
+        cell.activityIndic.stopAnimating()
+        cell.activityIndic.isHidden = true
+        PhotoAlbumController.persistCheck1 = false
         return cell
     }
     
@@ -204,6 +245,8 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
         self.dataController.viewContext.delete(photos[indexPath.row])
         do {
             try self.dataController.viewContext.save()
+            PhotoAlbumController.persistCheck1 = true //resetting conditions
+            PhotoAlbumController.persistCheck2 = true
             collecView.reloadData()
         }
         catch {
