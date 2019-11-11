@@ -249,10 +249,12 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath:IndexPath) {//********
         self.dataController.viewContext.delete(photos[indexPath.row])
+        photos.remove(at: indexPath.row)
         do {
             try self.dataController.viewContext.save()
             PhotoAlbumController.persistCheck1 = true //resetting conditions
             PhotoAlbumController.persistCheck2 = true
+            collectionView.deleteItems(at: [indexPath])
             collecView.reloadData()
         }
         catch {
