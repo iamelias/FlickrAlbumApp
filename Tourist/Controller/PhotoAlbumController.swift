@@ -62,7 +62,6 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
             
         else {
             photos = result.reversed() //Use results if not empty
-            print(photos.count)
             PhotoAlbumController.persistCheck1 = true
             DispatchQueue.global(qos: .userInitiated).sync {
                 self.collecView.reloadData()
@@ -205,7 +204,6 @@ class PhotoAlbumController: UIViewController, UICollectionViewDelegate,UICollect
         
         if PhotoAlbumController.persistCheck1 == true {
             PhotoAlbumController.persistCheck2 = true
-            print("entered")
             return photos.count //for persisted photos
         }
             
