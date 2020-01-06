@@ -9,13 +9,9 @@
 import Foundation
 import UIKit
 
-final class photoCollectionCell: UICollectionViewCell {
+final class PhotoCollectionCell: UICollectionViewCell {
     
     @IBOutlet weak var cellView: UIImageView!
+    @IBOutlet weak var activityIndic: UIActivityIndicatorView!
     
-//    var placeHolderImage: UIImage! {
-//        didSet {
-//            cellView.image = UIImage(named: "VirtualTourist_120" )
-//        }
-//    }
 }
