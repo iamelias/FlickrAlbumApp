@@ -5,7 +5,7 @@
 **Overview:** 
 This is an app for tourists to download and view Flickr photos at a specific location. The locations and photos are persisted in Core Data.
 
-**Important Concepts Used:** 
+**Important concepts used:** 
 URL Session, Core Data, GCD Concurrency, Gesture Recongizer(long-hold), MK Annotations
 
 **Walkthrough:**
@@ -14,7 +14,7 @@ User chooses location on map by scroll and zoom. User uses long hold gusture to 
 **Tools used:** 
 **Xcode 10.3/11.3, iPhone XS/11 Pro, UIKit, MapKit, Core Data
 
-**Select for larger and clearer image**
+**Select below for larger and clearer image**
 <p float="left">
 <img src = "Tourist/Images/ScreenShot1.png" width="100" height="200">
 <img src = "Tourist/Images/ScreenShot2.png" width="100" height="200">
