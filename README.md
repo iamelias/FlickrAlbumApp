@@ -15,7 +15,7 @@ User chooses location on map by scroll and zoom. User uses long hold gusture to 
 **Xcode 10.3/11.3, iPhone XS/11 Pro, UIKit, MapKit, Core Data
 
 <p float="left">
-<img src = "Images/Screenshot1.png" width="100" height="200">
-<img src = "Images/Screenshot2.png" width="100" height="200">
-<img src = "Images/Screenshot3.png" width="100" height="200">
+<img src = "Tourist/Images/Screenshot1.png" width="100" height="200">
+<img src = "Tourist/Images/Screenshot2.png" width="100" height="200">
+<img src = "Tourist/Images/Screenshot3.png" width="100" height="200">
 </p>
