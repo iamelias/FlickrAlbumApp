@@ -1,4 +1,4 @@
-# FlickrAlbumApp, iOS Developer: Elias Hall
+# FlickrAlbumApp, iOS Developer: Elias H.
 
 **Run instructions:** Xcode 10.3/11.3, iPhone XS/iPhone 11 Pro, light mode, portrait only
 
