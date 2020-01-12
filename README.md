@@ -1,6 +1,6 @@
 # FlickrAlbumApp, iOS Developer: Elias H.
 
-**Run instructions:** Xcode 10.3/11.3, iPhone XS/iPhone 11 Pro, light mode, portrait only
+**Run instructions:** Xcode 10.3/11.3, iOS Deployment Target: 12.4, iPhone XS/iPhone 11 Pro, light mode, portrait only
 
 **Overview:** 
 This is an app for tourists to download and view Flickr photos at a specific location. The locations and photos are persisted in Core Data.
